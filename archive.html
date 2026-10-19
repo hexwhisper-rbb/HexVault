@@ -412,7 +412,19 @@
           "meta",
           "Saved: " + new Date(item.updatedAt).toLocaleString()
         );
-        const body = makeElement("div", "entry-body", item.content);
+        const body = makeElement("div", "entry-body", item.content):
+        
+const readMore = makeElement("button", "", "READ MORE");
+readMore.type = "button";
+
+const fullContent = makeElement("div", "entry-body", item.content);
+fullContent.hidden = true;
+
+readMore.addEventListener("click", () => {
+  const isHidden = fullContent.hidden;
+  fullContent.hidden = !isHidden;
+  readMore.textContent = isHidden ? "READ LESS" : "READ MORE";
+});
         const actions = makeElement("div", "actions");
 
         const edit = makeElement("button", "", "Edit");
@@ -424,7 +436,7 @@
         remove.addEventListener("click", () => deleteEntry(item.id));
 
         actions.append(edit, remove);
-        card.append(tag, heading, date, body, actions);
+        card.append(tag, heading, date, body, readMore, fullContent, actions);
         entriesBox.appendChild(card);
       });
     }
