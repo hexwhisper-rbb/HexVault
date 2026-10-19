@@ -2,73 +2,242 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>HexVault | HexWhisper</title>
-  <style>
-    body {
-      background: #050807;
-      color: #00ff99;
-      font-family: monospace;
-      text-align: center;
-      padding: 30px 15px;
-    }
-    h1 {
-      font-size: 42px;
-      letter-spacing: 5px;
-      text-shadow: 0 0 15px #00ff99;
-    }
-    p {
-      color: #b4c7be;
-      line-height: 1.7;
-    }
-    a {
-      display: inline-block;
-      color: #00ff99;
-      border: 1px solid #00ff99;
-      padding: 12px;
-      margin: 8px;
-      text-decoration: none;
-    }
-    section {
-      margin: 30px auto;
-      padding: 18px;
-      max-width: 600px;
-      border: 1px solid #164b35;
-      background: #09110d;
-    }
-    footer {
-      margin-top: 45px;
-      color: #60756a;
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#050807">
+<title>HexVault | HexWhisper</title>
+<style>
+:root {
+  --bg: #050807;
+  --panel: #09130e;
+  --green: #00ff99;
+  --muted: #9bb5a6;
+  --border: #174a32;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0;
+  background:
+    radial-gradient(ellipse at top, #103522 0%, transparent 45%),
+    var(--bg);
+  color: #e1ffed;
+  font-family: "Courier New", monospace;
+  line-height: 1.7;
+}
+header, main, footer {
+  width: min(920px, 100%);
+  margin: auto;
+  padding: 22px;
+}
+nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 18px;
+}
+.logo {
+  color: var(--green);
+  font-size: 21px;
+  font-weight: bold;
+  letter-spacing: 3px;
+  text-shadow: 0 0 12px #00ff9970;
+}
+.status { color: var(--green); font-size: 12px; }
+.hero { padding: 65px 0 45px; }
+.eyebrow {
+  color: var(--green);
+  font-size: 12px;
+  letter-spacing: 2px;
+}
+h1 {
+  font-size: clamp(38px, 9vw, 66px);
+  line-height: 1.1;
+  margin: 15px 0;
+  letter-spacing: -2px;
+}
+h1 span { color: var(--green); }
+p { color: var(--muted); }
+.hero p { max-width: 560px; }
+.btn {
+  display: inline-block;
+  padding: 11px 16px;
+  margin: 8px 6px 0 0;
+  border: 1px solid var(--green);
+  border-radius: 4px;
+  color: var(--green);
+  text-decoration: none;
+}
+.btn.primary {
+  background: var(--green);
+  color: #031009;
+  font-weight: bold;
+}
+.btn:hover, button:hover {
+  box-shadow: 0 0 15px #00ff9950;
+}
+.section-title {
+  color: var(--green);
+  font-size: 13px;
+  letter-spacing: 2px;
+  margin: 35px 0 15px;
+}
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+.card {
+  border: 1px solid var(--border);
+  background: #09130ed9;
+  padding: 20px;
+  border-radius: 6px;
+  scroll-margin-top: 15px;
+}
+.card h3 { margin-top: 0; color: var(--green); }
+.symbol { font-size: 25px; }
+.terminal {
+  margin-top: 16px;
+  border: 1px solid var(--border);
+  background: #030605;
+  border-radius: 6px;
+  overflow: hidden;
+}
+.terminal-head {
+  padding: 10px 14px;
+  background: #102319;
+  color: var(--green);
+  font-size: 12px;
+}
+.terminal-body { padding: 16px; }
+.prompt { color: var(--green); }
+#output { white-space: pre-wrap; overflow-wrap: anywhere; }
+input {
+  width: 72%;
+  background: transparent;
+  border: 0;
+  outline: none;
+  color: white;
+  font: inherit;
+}
+button {
+  background: transparent;
+  border: 1px solid var(--green);
+  border-radius: 3px;
+  color: var(--green);
+  padding: 8px 12px;
+  font: inherit;
+  cursor: pointer;
+}
+footer {
+  margin-top: 45px;
+  border-top: 1px solid var(--border);
+  text-align: center;
+  color: #668574;
+  font-size: 12px;
+}
+@media (max-width: 520px) {
+  .grid { grid-template-columns: 1fr; }
+  header, main, footer { padding: 16px; }
+  .hero { padding-top: 45px; }
+}
+</style>
 </head>
 <body>
-  <h1>HEXVAULT</h1>
-  <p>/// WELCOME TO THE HIDDEN ARCHIVE ///</p>
-  <p>Identity: HexWhisper</p>
-
+<header>
   <nav>
-    <a href="#coding">Coding Lab</a>
-    <a href="#cyber">Cyber Lab</a>
-    <a href="#archive">Secret Archive</a>
+    <div class="logo">HEXVAULT_</div>
+    <div class="status">● SYSTEM ONLINE</div>
   </nav>
-
-  <section id="coding">
-    <h2>01 // CODING LAB</h2>
-    <p>Your journey into HTML, CSS and JavaScript starts here.</p>
+  <section class="hero">
+    <div class="eyebrow">// YOUR DIGITAL HIDEOUT</div>
+    <h1>Enter the <span>unknown.</span></h1>
+    <p>
+      A digital archive for curious minds, code explorers,
+      cybersecurity learners, and lovers of mysterious stories.
+    </p>
+    <a class="btn primary" href="#labs">Explore the vault →</a>
+    <a class="btn" href="#terminal">Open terminal</a>
   </section>
+</header>
 
-  <section id="cyber">
-    <h2>02 // CYBER LAB</h2>
-    <p>Learn ethical cybersecurity through safe, legal practice.</p>
-  </section>
+<main>
+  <div class="section-title" id="labs">// 01 — ACCESS POINTS</div>
+  <div class="grid">
+    <section class="card" id="coding">
+      <div class="symbol">⌘</div>
+      <h3>CODING LAB</h3>
+      <p>Start with HTML, learn CSS, and progress into JavaScript.</p>
+      <a class="btn" href="https://developer.mozilla.org/en-US/docs/Learn_web_development" target="_blank" rel="noopener">Start learning ↗</a>
+    </section>
+    <section class="card" id="cyber">
+      <div class="symbol">⬡</div>
+      <h3>CYBER LAB</h3>
+      <p>Learn online safety, networking, and ethical security in legal practice environments.</p>
+      <a class="btn" href="https://portswigger.net/web-security" target="_blank" rel="noopener">Explore labs ↗</a>
+    </section>
+    <section class="card" id="archive">
+      <div class="symbol">▤</div>
+      <h3>SECRET ARCHIVE</h3>
+      <p>A future home for your original stories, discoveries, and coding notes.</p>
+      <a class="btn" href="#terminal">Enter archive ↓</a>
+    </section>
+    <section class="card" id="about">
+      <div class="symbol">◈</div>
+      <h3>THE CREATOR</h3>
+      <p>Alias: HexWhisper<br>Mission: Learn. Build. Discover.</p>
+      <p>Every expert starts as a beginner.</p>
+    </section>
+  </div>
 
-  <section id="archive">
-    <h2>03 // SECRET ARCHIVE</h2>
-    <p>Stories, digital mysteries and discoveries.</p>
-  </section>
+  <div class="section-title" id="terminal">// 02 — INTERACTIVE TERMINAL</div>
+  <div class="terminal">
+    <div class="terminal-head">hexwhisper@hexvault: ~</div>
+    <div class="terminal-body">
+      <div class="prompt">Welcome, explorer. Type "help".</div>
+      <p id="output">Vault initialised successfully.</p>
+      <form id="command-form">
+        <label class="prompt" for="command">visitor@vault:~$ </label>
+        <input id="command" autocomplete="off" spellcheck="false" placeholder="type a command">
+        <button type="submit">Run</button>
+      </form>
+    </div>
+  </div>
+</main>
 
-  <footer>HEXWHISPER // ACCESS GRANTED</footer>
+<footer>
+  HEXVAULT // BUILT BY HEXWHISPER<br>
+  LEARN RESPONSIBLY. EXPLORE LEGALLY. KEEP BUILDING.
+</footer>
+
+<script>
+const form = document.getElementById("command-form");
+const input = document.getElementById("command");
+const output = document.getElementById("output");
+
+const commands = {
+  help: "Available commands: help, about, labs, archive, clear",
+  about: "HexVault is a learning project created by HexWhisper.",
+  labs: "Coding Lab: HTML, CSS, JavaScript. Cyber Lab: ethical security.",
+  archive: "The archive is under construction. Your stories belong here.",
+  clear: ""
+};
+
+form.addEventListener("submit", function(event) {
+  event.preventDefault();
+  const command = input.value.trim().toLowerCase();
+  if (command === "clear") {
+    output.textContent = "";
+  } else if (Object.prototype.hasOwnProperty.call(commands, command)) {
+    output.textContent = commands[command];
+  } else {
+    output.textContent = "Unknown command. Type help to see available commands.";
+  }
+  input.value = "";
+});
+</script>
 </body>
 </html>
