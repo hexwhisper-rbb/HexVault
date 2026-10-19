@@ -2,477 +2,761 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="theme-color" content="#050807">
-<title>HexVault | HexWhisper</title>
-<style>
-:root {
-  --bg: #050807;
-  --panel: #09130e;
-  --green: #00ff99;
-  --muted: #9bb5a6;
-  --border: #174a32;
-}
-* { box-sizing: border-box; }
-html { scroll-behavior: smooth; }
-body {
-  margin: 0;
-  background:
-    radial-gradient(ellipse at top, #103522 0%, transparent 45%),
-    var(--bg);
-  color: #e1ffed;
-  font-family: "Courier New", monospace;
-  line-height: 1.7;
-}
-header, main, footer {
-  width: min(920px, 100%);
-  margin: auto;
-  padding: 22px;
-}
-nav {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 12px;
-  border-bottom: 1px solid var(--border);
-  padding-bottom: 18px;
-}
-.logo {
-  color: var(--green);
-  font-size: 21px;
-  font-weight: bold;
-  letter-spacing: 3px;
-  text-shadow: 0 0 12px #00ff9970;
-}
-.status { color: var(--green); font-size: 12px; }
-.hero { padding: 65px 0 45px; }
-.eyebrow {
-  color: var(--green);
-  font-size: 12px;
-  letter-spacing: 2px;
-}
-h1 {
-  font-size: clamp(38px, 9vw, 66px);
-  line-height: 1.1;
-  margin: 15px 0;
-  letter-spacing: -2px;
-}
-h1 span { color: var(--green); }
-p { color: var(--muted); }
-.hero p { max-width: 560px; }
-.btn {
-  display: inline-block;
-  padding: 11px 16px;
-  margin: 8px 6px 0 0;
-  border: 1px solid var(--green);
-  border-radius: 4px;
-  color: var(--green);
-  text-decoration: none;
-}
-.btn.primary {
-  background: var(--green);
-  color: #031009;
-  font-weight: bold;
-}
-.btn:hover, button:hover {
-  box-shadow: 0 0 15px #00ff9950;
-}
-.section-title {
-  color: var(--green);
-  font-size: 13px;
-  letter-spacing: 2px;
-  margin: 35px 0 15px;
-}
-.grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 14px;
-}
-.card {
-  border: 1px solid var(--border);
-  background: #09130ed9;
-  padding: 20px;
-  border-radius: 6px;
-  scroll-margin-top: 15px;
-}
-.card h3 { margin-top: 0; color: var(--green); }
-.symbol { font-size: 25px; }
-.terminal {
-  margin-top: 16px;
-  border: 1px solid var(--border);
-  background: #030605;
-  border-radius: 6px;
-  overflow: hidden;
-}
-.terminal-head {
-  padding: 10px 14px;
-  background: #102319;
-  color: var(--green);
-  font-size: 12px;
-}
-.terminal-body { padding: 16px; }
-.prompt { color: var(--green); }
-#output { white-space: pre-wrap; overflow-wrap: anywhere; }
-input {
-  width: 72%;
-  background: transparent;
-  border: 0;
-  outline: none;
-  color: white;
-  font: inherit;
-}
-button {
-  background: transparent;
-  border: 1px solid var(--green);
-  border-radius: 3px;
-  color: var(--green);
-  padding: 8px 12px;
-  font: inherit;
-  cursor: pointer;
-}
-footer {
-  margin-top: 45px;
-  border-top: 1px solid var(--border);
-  text-align: center;
-  color: #668574;
-  font-size: 12px;
-}
-@media (max-width: 520px) {
-  .grid { grid-template-columns: 1fr; }
-  header, main, footer { padding: 16px; }
-  .hero { padding-top: 45px; }
-}
-</style>
-  
-/* HEXVAULT MATRIX MODE */
-#matrix-rain {
-  position: fixed;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 0;
-  pointer-events: none;
-  opacity: 0.22;
-}
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#050807">
+  <meta name="description" content="HexVault by HexWhisper — a dark digital archive for coding, cybersecurity learning, and mysterious stories.">
+  <title>HexVault | HexWhisper</title>
 
-body > header,
-body > main,
-body > footer {
-  position: relative;
-  z-index: 1;
-}
+  <style>
+    :root {
+      --bg: #050807;
+      --panel: #09130e;
+      --green: #00ff99;
+      --muted: #9bb5a6;
+      --border: #174a32;
+    }
 
-/* Terminal boot intro */
-#vault-intro {
-  position: fixed;
-  inset: 0;
-  z-index: 100;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 22px;
-  background: #030605;
-  color: #00ff99;
-  font-family: "Courier New", monospace;
-  transition: opacity 0.45s ease;
-}
+    * {
+      box-sizing: border-box;
+    }
 
-#vault-intro.hidden {
-  opacity: 0;
-  pointer-events: none;
-}
+    html {
+      scroll-behavior: smooth;
+      scroll-padding-top: 18px;
+    }
 
-.intro-panel {
-  width: 100%;
-  max-width: 520px;
-  border: 1px solid #174a32;
-  padding: 22px;
-  box-shadow: 0 0 25px #00ff9912;
-}
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background:
+        radial-gradient(ellipse at top, #103522 0%, transparent 45%),
+        var(--bg);
+      color: #e1ffed;
+      font-family: "Courier New", monospace;
+      line-height: 1.7;
+    }
 
-.intro-title {
-  font-size: 23px;
-  font-weight: bold;
-  letter-spacing: 3px;
-  margin-bottom: 18px;
-}
+    a, button, input {
+      -webkit-tap-highlight-color: transparent;
+    }
 
-#intro-log {
-  min-height: 115px;
-  font-size: 13px;
-  line-height: 2;
-  white-space: pre-wrap;
-  overflow-wrap: anywhere;
-}
+    a {
+      overflow-wrap: anywhere;
+    }
 
-.intro-line {
-  color: #9bb5a6;
-}
+    button, input {
+      font: inherit;
+    }
 
-.intro-line::before {
-  content: "> ";
-  color: #00ff99;
-}
+    button:focus-visible,
+    a:focus-visible,
+    input:focus-visible {
+      outline: 2px solid var(--green);
+      outline-offset: 4px;
+    }
 
-#skip-intro {
-  margin-top: 14px;
-  padding: 9px 12px;
-  border: 1px solid #00ff99;
-  border-radius: 3px;
-  color: #00ff99;
-  background: transparent;
-  font: inherit;
-}
+    /* MATRIX BACKGROUND */
 
-@media (prefers-reduced-motion: reduce) {
-  #vault-intro {
-    transition: none;
-  }
-}
+    #matrix-rain {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+      pointer-events: none;
+      opacity: 0.19;
+    }
+
+    body > header,
+    body > main,
+    body > footer {
+      position: relative;
+      z-index: 1;
+    }
+
+    header, main, footer {
+      width: min(920px, 100%);
+      margin-inline: auto;
+      padding: 22px;
+    }
+
+    /* NAVIGATION */
+
+    nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 18px;
+    }
+
+    .logo {
+      color: var(--green);
+      font-size: 21px;
+      font-weight: bold;
+      letter-spacing: 3px;
+      text-shadow: 0 0 12px #00ff9970;
+    }
+
+    .status {
+      color: var(--green);
+      font-size: 12px;
+    }
+
+    /* HERO */
+
+    .hero {
+      padding: 65px 0 45px;
+    }
+
+    .eyebrow {
+      color: var(--green);
+      font-size: 12px;
+      letter-spacing: 2px;
+    }
+
+    h1 {
+      font-size: clamp(38px, 9vw, 66px);
+      line-height: 1.1;
+      margin: 15px 0;
+      letter-spacing: -2px;
+      overflow-wrap: anywhere;
+    }
+
+    h1 span {
+      color: var(--green);
+      text-shadow: 0 0 20px #00ff9930;
+    }
+
+    p {
+      color: var(--muted);
+    }
+
+    .hero p {
+      max-width: 560px;
+    }
+
+    .btn {
+      display: inline-block;
+      padding: 10px 15px;
+      margin: 8px 6px 0 0;
+      border: 1px solid var(--green);
+      border-radius: 4px;
+      color: var(--green);
+      text-decoration: none;
+      transition: box-shadow 0.2s, background 0.2s;
+    }
+
+    .btn:hover {
+      box-shadow: 0 0 15px #00ff9950;
+    }
+
+    .btn.primary {
+      background: var(--green);
+      color: #031009;
+      font-weight: bold;
+    }
+
+    /* ACCESS CARDS */
+
+    .section-title {
+      color: var(--green);
+      font-size: 13px;
+      letter-spacing: 2px;
+      margin: 35px 0 15px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .card {
+      min-width: 0;
+      border: 1px solid var(--border);
+      background: #09130eeb;
+      padding: 20px;
+      border-radius: 6px;
+      scroll-margin-top: 15px;
+    }
+
+    .card h3 {
+      margin-top: 0;
+      color: var(--green);
+    }
+
+    .symbol {
+      font-size: 25px;
+    }
+
+    /* INTERACTIVE TERMINAL */
+
+    .terminal {
+      margin-top: 16px;
+      border: 1px solid var(--border);
+      background: #030605;
+      border-radius: 6px;
+      overflow: hidden;
+      box-shadow: 0 0 20px #00ff9908;
+    }
+
+    .terminal-head {
+      padding: 10px 14px;
+      background: #102319;
+      color: var(--green);
+      font-size: 12px;
+      overflow-wrap: anywhere;
+    }
+
+    .terminal-body {
+      padding: 16px;
+    }
+
+    .prompt {
+      color: var(--green);
+    }
+
+    #output {
+      min-height: 1.7em;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+    }
+
+    #command-form {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    #command {
+      flex: 1 1 140px;
+      min-width: 0;
+      width: 100%;
+      background: #07100b;
+      border: 1px solid var(--border);
+      border-radius: 3px;
+      padding: 9px;
+      color: #fff;
+      outline-offset: 2px;
+    }
+
+    #command::placeholder {
+      color: #668574;
+    }
+
+    #command-form button,
+    #skip-intro {
+      background: transparent;
+      border: 1px solid var(--green);
+      border-radius: 3px;
+      color: var(--green);
+      padding: 9px 12px;
+      cursor: pointer;
+    }
+
+    #command-form button:hover,
+    #skip-intro:hover {
+      background: #00ff9918;
+    }
+
+    /* TERMINAL BOOT INTRO */
+
+    #vault-intro {
+      position: fixed;
+      inset: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 22px;
+      background: #030605;
+      color: var(--green);
+      transition: opacity 0.35s ease;
+    }
+
+    #vault-intro.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .intro-panel {
+      width: 100%;
+      max-width: 520px;
+      border: 1px solid var(--border);
+      padding: 22px;
+      box-shadow: 0 0 25px #00ff9912;
+    }
+
+    .intro-title {
+      font-size: 23px;
+      font-weight: bold;
+      letter-spacing: 3px;
+      margin-bottom: 18px;
+    }
+
+    #intro-log {
+      min-height: 115px;
+      font-size: 13px;
+      line-height: 2;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+    }
+
+    .intro-line {
+      color: var(--muted);
+    }
+
+    .intro-line::before {
+      content: "> ";
+      color: var(--green);
+    }
+
+    #skip-intro {
+      margin-top: 14px;
+    }
+
+    /* FOOTER */
+
+    footer {
+      margin-top: 45px;
+      border-top: 1px solid var(--border);
+      text-align: center;
+      color: #668574;
+      font-size: 12px;
+    }
+
+    /* MOBILE AND ACCESSIBILITY */
+
+    @media (max-width: 520px) {
+      .grid {
+        grid-template-columns: 1fr;
+      }
+
+      header, main, footer {
+        padding: 16px;
+      }
+
+      .hero {
+        padding-top: 45px;
+      }
+
+      .intro-panel {
+        padding: 16px;
+      }
+
+      .logo {
+        font-size: 18px;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html {
+        scroll-behavior: auto;
+      }
+
+      *, *::before, *::after {
+        transition-duration: 0.01ms !important;
+      }
+    }
+  </style>
 </head>
+
 <body>
-  
-<canvas id="matrix-rain" aria-hidden="true"></canvas>
 
-<div id="vault-intro" role="status" aria-label="HexVault loading">
-  <div class="intro-panel">
-    <div class="intro-title">HEXVAULT_</div>
-    <div id="intro-log"></div>
-    <button id="skip-intro" type="button">SKIP INTRO →</button>
-  </div>
-</div>
-<header>
-  <nav>
-    <div class="logo">HEXVAULT_</div>
-    <div class="status">● SYSTEM ONLINE</div>
-  </nav>
-  <section class="hero">
-    <div class="eyebrow">// YOUR DIGITAL HIDEOUT</div>
-    <h1>Enter the <span>unknown.</span></h1>
-    <p>
-      A digital archive for curious minds, code explorers,
-      cybersecurity learners, and lovers of mysterious stories.
-    </p>
-    <a class="btn primary" href="#labs">Explore the vault →</a>
-    <a class="btn" href="#terminal">Open terminal</a>
-  </section>
-</header>
+  <!-- MATRIX BACKGROUND -->
+  <canvas id="matrix-rain" aria-hidden="true"></canvas>
 
-<main>
-  <div class="section-title" id="labs">// 01 — ACCESS POINTS</div>
-  <div class="grid">
-    <section class="card" id="coding">
-      <div class="symbol">⌘</div>
-      <h3>CODING LAB</h3>
-      <p>Start with HTML, learn CSS, and progress into JavaScript.</p>
-      <a class="btn" href="https://developer.mozilla.org/en-US/docs/Learn_web_development" target="_blank" rel="noopener">Start learning ↗</a>
-    </section>
-    <section class="card" id="cyber">
-      <div class="symbol">⬡</div>
-      <h3>CYBER LAB</h3>
-      <p>Learn online safety, networking, and ethical security in legal practice environments.</p>
-      <a class="btn" href="https://portswigger.net/web-security" target="_blank" rel="noopener">Explore labs ↗</a>
-    </section>
-    <section class="card" id="archive">
-      <div class="symbol">▤</div>
-      <h3>SECRET ARCHIVE</h3>
-      <p>A future home for your original stories, discoveries, and coding notes.</p>
-      <a class="btn" href="#terminal">Enter archive ↓</a>
-    </section>
-    <section class="card" id="about">
-      <div class="symbol">◈</div>
-      <h3>THE CREATOR</h3>
-      <p>Alias: HexWhisper<br>Mission: Learn. Build. Discover.</p>
-      <p>Every expert starts as a beginner.</p>
-    </section>
-  </div>
+  <!-- BOOT INTRO -->
+  <div id="vault-intro" role="dialog"
+       aria-label="HexVault introduction"
+       aria-modal="true">
 
-  <div class="section-title" id="terminal">// 02 — INTERACTIVE TERMINAL</div>
-  <div class="terminal">
-    <div class="terminal-head">hexwhisper@hexvault: ~</div>
-    <div class="terminal-body">
-      <div class="prompt">Welcome, explorer. Type "help".</div>
-      <p id="output">Vault initialised successfully.</p>
-      <form id="command-form">
-        <label class="prompt" for="command">visitor@vault:~$ </label>
-        <input id="command" autocomplete="off" spellcheck="false" placeholder="type a command">
-        <button type="submit">Run</button>
-      </form>
+    <div class="intro-panel">
+      <div class="intro-title">HEXVAULT_</div>
+      <div id="intro-log" aria-live="polite"></div>
+      <button id="skip-intro" type="button">
+        SKIP INTRO →
+      </button>
     </div>
   </div>
-</main>
 
-<footer>
-  HEXVAULT // BUILT BY HEXWHISPER<br>
-  LEARN RESPONSIBLY. EXPLORE LEGALLY. KEEP BUILDING.
-</footer>
+  <!-- HEADER -->
+  <header>
+    <nav>
+      <div class="logo">HEXVAULT_</div>
+      <div class="status">● SYSTEM ONLINE</div>
+    </nav>
 
-<script>
+    <section class="hero">
+      <div class="eyebrow">// YOUR DIGITAL HIDEOUT</div>
 
-/* HEXVAULT MATRIX RAIN */
-const canvas = document.getElementById("matrix-rain");
-const ctx = canvas.getContext("2d");
+      <h1>Enter the <span>unknown.</span></h1>
 
-const reducedMotion = window.matchMedia(
-  "(prefers-reduced-motion: reduce)"
-).matches;
+      <p>
+        A digital archive for curious minds, code explorers,
+        cybersecurity learners, and lovers of mysterious stories.
+      </p>
 
-let columns = [];
-let width = 0;
-let height = 0;
-let lastFrame = 0;
-const symbols = "01HEXVAULTアイウエオカキクケコ";
+      <a class="btn primary" href="#labs">
+        Explore the vault →
+      </a>
 
-function resizeMatrix() {
-  const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+      <a class="btn" href="#terminal">
+        Open terminal
+      </a>
+    </section>
+  </header>
 
-  width = window.innerWidth;
-  height = window.innerHeight;
+  <!-- MAIN CONTENT -->
+  <main>
+    <div class="section-title" id="labs">
+      // 01 — ACCESS POINTS
+    </div>
 
-  canvas.width = Math.floor(width * dpr);
-  canvas.height = Math.floor(height * dpr);
-  canvas.style.width = width + "px";
-  canvas.style.height = height + "px";
+    <div class="grid">
 
-  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      <section class="card" id="coding">
+        <div class="symbol">⌘</div>
+        <h3>CODING LAB</h3>
+        <p>
+          Start with HTML, learn CSS, and progress into JavaScript.
+        </p>
+        <a class="btn"
+           href="https://developer.mozilla.org/en-US/docs/Learn_web_development"
+           target="_blank" rel="noopener noreferrer">
+          Start learning ↗
+        </a>
+      </section>
 
-  const fontSize = 14;
-  const count = Math.ceil(width / fontSize);
+      <section class="card" id="cyber">
+        <div class="symbol">⬡</div>
+        <h3>CYBER LAB</h3>
+        <p>
+          Learn online safety, networking, and ethical security
+          in legal practice environments.
+        </p>
+        <a class="btn"
+           href="https://portswigger.net/web-security"
+           target="_blank" rel="noopener noreferrer">
+          Explore labs ↗
+        </a>
+      </section>
 
-  columns = Array.from({ length: count }, () =>
-    Math.random() * (height / fontSize)
-  );
-}
+      <section class="card" id="archive">
+        <div class="symbol">▤</div>
+        <h3>SECRET ARCHIVE</h3>
+        <p>
+          A future home for your original stories, discoveries,
+          and coding notes.
+        </p>
+        <a class="btn" href="#terminal">
+          Enter archive ↓
+        </a>
+      </section>
 
-function drawMatrix(timestamp) {
-  if (document.hidden) {
-    requestAnimationFrame(drawMatrix);
-    return;
-  }
+      <section class="card" id="about">
+        <div class="symbol">◈</div>
+        <h3>THE CREATOR</h3>
+        <p>
+          Alias: HexWhisper<br>
+          Mission: Learn. Build. Discover.
+        </p>
+        <p>Every expert starts as a beginner.</p>
+      </section>
 
-  // Limit animation work on phones.
-  if (timestamp - lastFrame < 45) {
-    requestAnimationFrame(drawMatrix);
-    return;
-  }
+    </div>
 
-  lastFrame = timestamp;
+    <!-- TERMINAL -->
+    <div class="section-title" id="terminal">
+      // 02 — INTERACTIVE TERMINAL
+    </div>
 
-  ctx.fillStyle = "rgba(3, 6, 5, 0.10)";
-  ctx.fillRect(0, 0, width, height);
+    <div class="terminal">
+      <div class="terminal-head">
+        hexwhisper@hexvault: ~
+      </div>
 
-  ctx.font = "14px monospace";
-  ctx.fillStyle = "#00ff99";
+      <div class="terminal-body">
+        <div class="prompt">
+          Welcome, explorer. Type "help".
+        </div>
 
-  columns.forEach((y, i) => {
-    const char = symbols[
-      Math.floor(Math.random() * symbols.length)
+        <p id="output" aria-live="polite">
+          Vault initialised successfully.
+        </p>
+
+        <form id="command-form">
+          <label class="prompt" for="command">
+            visitor@vault:~$
+          </label>
+
+          <input
+            id="command"
+            name="command"
+            type="text"
+            autocomplete="off"
+            autocapitalize="none"
+            spellcheck="false"
+            placeholder="type a command"
+            maxlength="60"
+            aria-label="Terminal command"
+          >
+
+          <button type="submit">Run</button>
+        </form>
+      </div>
+    </div>
+  </main>
+
+  <!-- FOOTER -->
+  <footer>
+    HEXVAULT // BUILT BY HEXWHISPER<br>
+    LEARN RESPONSIBLY. EXPLORE LEGALLY. KEEP BUILDING.
+  </footer>
+
+  <script>
+    "use strict";
+
+    /* ==========================
+       HEXVAULT MATRIX RAIN
+       Lightweight canvas animation
+       ========================== */
+
+    const canvas = document.getElementById("matrix-rain");
+    const ctx = canvas.getContext("2d");
+
+    const motionPreference = window.matchMedia(
+      "(prefers-reduced-motion: reduce)"
+    );
+
+    const symbols = "01HEXVAULTアイウエオカキクケコ";
+    const fontSize = 14;
+
+    let columns = [];
+    let width = 0;
+    let height = 0;
+    let animationId = 0;
+    let lastFrame = 0;
+
+    function resizeMatrix() {
+      const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+
+      width = window.innerWidth;
+      height = window.innerHeight;
+
+      canvas.width = Math.floor(width * dpr);
+      canvas.height = Math.floor(height * dpr);
+      canvas.style.width = width + "px";
+      canvas.style.height = height + "px";
+
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+      const count = Math.ceil(width / fontSize);
+
+      columns = Array.from(
+        { length: count },
+        () => Math.random() * (height / fontSize)
+      );
+
+      // Avoid retaining an old frame after resizing.
+      ctx.clearRect(0, 0, width, height);
+    }
+
+    function drawMatrix(timestamp) {
+      animationId = 0;
+
+      if (
+        document.hidden ||
+        motionPreference.matches
+      ) {
+        return;
+      }
+
+      // Limit drawing frequency on mobile devices.
+      if (timestamp - lastFrame < 50) {
+        animationId = requestAnimationFrame(drawMatrix);
+        return;
+      }
+
+      lastFrame = timestamp;
+
+      ctx.fillStyle = "rgba(3, 6, 5, 0.12)";
+      ctx.fillRect(0, 0, width, height);
+
+      ctx.font = fontSize + "px monospace";
+      ctx.fillStyle = "#00ff99";
+
+      for (let i = 0; i < columns.length; i++) {
+        const char = symbols[
+          Math.floor(Math.random() * symbols.length)
+        ];
+
+        const x = i * fontSize;
+        const y = columns[i] * fontSize;
+
+        ctx.fillText(char, x, y);
+
+        if (
+          y > height &&
+          Math.random() > 0.975
+        ) {
+          columns[i] = 0;
+        } else {
+          columns[i] += 0.45;
+        }
+      }
+
+      animationId = requestAnimationFrame(drawMatrix);
+    }
+
+    function stopMatrix() {
+      if (animationId) {
+        cancelAnimationFrame(animationId);
+        animationId = 0;
+      }
+    }
+
+    function startMatrix() {
+      stopMatrix();
+
+      if (
+        !document.hidden &&
+        !motionPreference.matches
+      ) {
+        lastFrame = 0;
+        animationId = requestAnimationFrame(drawMatrix);
+      }
+    }
+
+    resizeMatrix();
+    startMatrix();
+
+    window.addEventListener("resize", resizeMatrix);
+    document.addEventListener("visibilitychange", startMatrix);
+
+    if (motionPreference.addEventListener) {
+      motionPreference.addEventListener("change", startMatrix);
+    }
+
+    /* ==========================
+       TERMINAL-STYLE INTRO
+       ========================== */
+
+    const intro = document.getElementById("vault-intro");
+    const introLog = document.getElementById("intro-log");
+    const skipButton = document.getElementById("skip-intro");
+
+    const bootMessages = [
+      "INITIALIZING HEXVAULT...",
+      "LOADING DIGITAL ARCHIVE...",
+      "CHECKING SYSTEM STATUS... OK",
+      "WELCOME, EXPLORER."
     ];
 
-    ctx.fillText(char, i * 14, y * 14);
+    let messageIndex = 0;
+    let introFinished = false;
+    let introTimer = null;
+    let removeTimer = null;
 
-    if (y * 14 > height && Math.random() > 0.975) {
-      columns[i] = 0;
-    } else {
-      columns[i] += 0.45;
+    function closeIntro() {
+      if (introFinished) return;
+
+      introFinished = true;
+      clearTimeout(introTimer);
+
+      intro.classList.add("hidden");
+      intro.setAttribute("aria-hidden", "true");
+
+      // Let the short fade finish before removing the overlay.
+      removeTimer = setTimeout(() => {
+        intro.remove();
+      }, motionPreference.matches ? 0 : 380);
     }
-  });
 
-  requestAnimationFrame(drawMatrix);
-}
+    function showNextMessage() {
+      if (introFinished) return;
 
-resizeMatrix();
+      if (messageIndex < bootMessages.length) {
+        const line = document.createElement("div");
 
-if (!reducedMotion) {
-  requestAnimationFrame(drawMatrix);
-}
+        line.className = "intro-line";
+        line.textContent = bootMessages[messageIndex];
 
-window.addEventListener("resize", resizeMatrix);
+        introLog.appendChild(line);
+        messageIndex++;
 
-/* TERMINAL-STYLE INTRO */
-const intro = document.getElementById("vault-intro");
-const introLog = document.getElementById("intro-log");
-const skipButton = document.getElementById("skip-intro");
+        introTimer = setTimeout(showNextMessage, 350);
+      } else {
+        introTimer = setTimeout(closeIntro, 300);
+      }
+    }
 
-const bootMessages = [
-  "INITIALIZING HEXVAULT...",
-  "LOADING DIGITAL ARCHIVE...",
-  "CHECKING SYSTEM STATUS... OK",
-  "WELCOME, EXPLORER."
-];
+    skipButton.addEventListener("click", closeIntro);
 
-let messageIndex = 0;
-let introFinished = false;
-let introTimer;
+    if (motionPreference.matches) {
+      closeIntro();
+    } else {
+      showNextMessage();
+    }
 
-function showNextMessage() {
-  if (introFinished) return;
+    /* ==========================
+       INTERACTIVE VAULT TERMINAL
+       ========================== */
 
-  if (messageIndex < bootMessages.length) {
-    const line = document.createElement("div");
-    line.className = "intro-line";
-    line.textContent = bootMessages[messageIndex];
-    introLog.appendChild(line);
-    messageIndex++;
-    introTimer = setTimeout(showNextMessage, 420);
-  } else {
-    introTimer = setTimeout(closeIntro, 350);
-  }
-}
+    const form = document.getElementById("command-form");
+    const input = document.getElementById("command");
+    const output = document.getElementById("output");
 
-function closeIntro() {
-  if (introFinished) return;
+    const commands = {
+      help:
+        "Available commands: help, about, labs, coding, cyber, archive, clear",
 
-  introFinished = true;
-  clearTimeout(introTimer);
-  intro.classList.add("hidden");
+      about:
+        "HexVault is a digital learning project created by HexWhisper.",
 
-  setTimeout(() => {
-    intro.remove();
-  }, 500);
-}
+      labs:
+        "Available areas: Coding Lab, Cyber Lab, Secret Archive.",
 
-skipButton.addEventListener("click", closeIntro);
+      coding:
+        "CODING LAB: Learn HTML, CSS, and JavaScript. Start with the MDN learning guides.",
 
-if (reducedMotion) {
-  closeIntro();
-} else {
-  showNextMessage();
-}
+      cyber:
+        "CYBER LAB: Learn networking, online safety, and ethical security using authorised practice labs.",
 
-/* ORIGINAL HEXVAULT TERMINAL */
-const form = document.getElementById("command-form");
-const input = document.getElementById("command");
-const output = document.getElementById("output");
+      archive:
+        "SECRET ARCHIVE: Under construction. Your original stories and coding notes belong here."
+    };
 
-const commands = {
-  help: "Available commands: help, about, labs, archive, clear",
-  about: "HexVault is a learning project created by HexWhisper.",
-  labs: "Coding Lab: HTML, CSS, JavaScript. Cyber Lab: ethical security.",
-  archive: "The archive is under construction. Your stories belong here.",
-  clear: ""
-};
+    form.addEventListener("submit", function(event) {
+      event.preventDefault();
 
-form.addEventListener("submit", function(event) {
-  event.preventDefault();
+      const command = input.value.trim().toLowerCase();
 
-  const command = input.value.trim().toLowerCase();
+      if (!command) {
+        output.textContent = 'Type "help" to see available commands.';
+        return;
+      }
 
-  if (command === "clear") {
-    output.textContent = "";
-  } else if (
-    Object.prototype.hasOwnProperty.call(commands, command)
-  ) {
-    output.textContent = commands[command];
-  } else {
-    output.textContent =
-      "Unknown command. Type help to see available commands.";
-  }
+      if (command === "clear") {
+        output.textContent = "";
+      } else if (
+        Object.prototype.hasOwnProperty.call(commands, command)
+      ) {
+        output.textContent = commands[command];
+      } else {
+        output.textContent =
+          'Unknown command: "' + command +
+          '". Type help to see available commands.';
+      }
 
-  input.value = "";
-});
-</script>
+      input.value = "";
+    });
+  </script>
+
 </body>
 </html>
