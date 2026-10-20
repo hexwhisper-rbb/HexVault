@@ -1,10 +1,15 @@
 
+<!-- =========================
+     HEXVAULT ARCHIVE
+     HTML + CSS + JAVASCRIPT
+     ========================= -->
+
 <section class="hv-archive" id="hexvault-archive">
   <div class="hv-header">
     <div>
       <p class="hv-eyebrow">HEXVAULT // PRIVATE ARCHIVE</p>
       <h2>Knowledge Vault</h2>
-      <p class="hv-muted">Store your notes. Keep your secrets organized.</p>
+      <p class="hv-muted">Store your notes. Keep your archive organized.</p>
     </div>
     <span class="hv-status">● LOCAL STORAGE</span>
   </div>
@@ -18,11 +23,11 @@
 
     <label for="hv-category">Category</label>
     <select id="hv-category">
-      <option value="General">General</option>
-      <option value="Coding">Coding</option>
-      <option value="Cybersecurity">Cybersecurity</option>
-      <option value="Research">Research</option>
-      <option value="Personal Notes">Personal Notes</option>
+      <option>General</option>
+      <option>Coding</option>
+      <option>Cybersecurity</option>
+      <option>Research</option>
+      <option>Personal Notes</option>
     </select>
 
     <label for="hv-content">Archive content</label>
@@ -38,14 +43,13 @@
   <div class="hv-toolbar">
     <input id="hv-search" type="search"
       placeholder="Search your archive...">
-
-    <select id="hv-filter" aria-label="Filter archive category">
+    <select id="hv-filter">
       <option value="All">All categories</option>
-      <option value="General">General</option>
-      <option value="Coding">Coding</option>
-      <option value="Cybersecurity">Cybersecurity</option>
-      <option value="Research">Research</option>
-      <option value="Personal Notes">Personal Notes</option>
+      <option>General</option>
+      <option>Coding</option>
+      <option>Cybersecurity</option>
+      <option>Research</option>
+      <option>Personal Notes</option>
     </select>
   </div>
 
@@ -57,6 +61,409 @@
       accept=".json,application/json" hidden>
   </div>
 
-  <p id="hv-message" class="hv-message" role="status" aria-live="polite"></p>
+  <p id="hv-message" class="hv-message" role="status"></p>
   <div id="hv-list" class="hv-list"></div>
 </section>
+
+<style>
+.hv-archive {
+  width: 100%;
+  max-width: 1000px;
+  margin: 30px auto;
+  color: inherit;
+  font-family: inherit;
+  box-sizing: border-box;
+}
+.hv-archive *,
+.hv-archive *::before,
+.hv-archive *::after {
+  box-sizing: border-box;
+}
+.hv-header, .hv-summary, .hv-toolbar, .hv-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.hv-header { margin-bottom: 22px; }
+.hv-eyebrow {
+  color: #39ff88;
+  font-size: .75rem;
+  letter-spacing: 2px;
+}
+.hv-archive h2 {
+  margin: 8px 0;
+  font-size: clamp(1.5rem, 5vw, 2.2rem);
+}
+.hv-muted, .hv-entry-meta {
+  opacity: .7;
+  font-size: .85rem;
+}
+.hv-status, .hv-tag {
+  color: #39ff88;
+  font-size: .75rem;
+}
+.hv-form {
+  display: grid;
+  gap: 10px;
+  padding: 18px;
+  margin-bottom: 20px;
+  border: 1px solid rgba(57,255,136,.3);
+  border-radius: 12px;
+  background: rgba(0,0,0,.16);
+}
+.hv-archive input,
+.hv-archive select,
+.hv-archive textarea {
+  width: 100%;
+  min-width: 0;
+  padding: 12px;
+  color: inherit;
+  background: rgba(0,0,0,.3);
+  border: 1px solid rgba(57,255,136,.3);
+  border-radius: 7px;
+  font: inherit;
+}
+.hv-archive textarea { resize: vertical; }
+.hv-archive input:focus,
+.hv-archive select:focus,
+.hv-archive textarea:focus {
+  outline: 2px solid #39ff88;
+  outline-offset: 2px;
+}
+.hv-archive button {
+  padding: 10px 14px;
+  color: #39ff88;
+  background: rgba(0,0,0,.25);
+  border: 1px solid #39ff88;
+  border-radius: 7px;
+  font: inherit;
+  cursor: pointer;
+}
+.hv-archive button:hover {
+  background: rgba(57,255,136,.12);
+}
+.hv-toolbar { margin: 18px 0; }
+.hv-toolbar input { flex: 2 1 200px; }
+.hv-toolbar select { flex: 1 1 150px; }
+.hv-summary {
+  justify-content: flex-start;
+  margin: 14px 0;
+}
+.hv-message {
+  min-height: 1.4em;
+  overflow-wrap: anywhere;
+}
+.hv-entry {
+  padding: 16px;
+  margin: 14px 0;
+  border: 1px solid rgba(57,255,136,.25);
+  border-radius: 10px;
+  background: rgba(0,0,0,.18);
+  overflow-wrap: anywhere;
+}
+.hv-entry h3 { margin: 8px 0; }
+.hv-entry-content {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  line-height: 1.6;
+}
+.hv-entry-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.hv-empty { opacity: .7; padding: 20px 0; }
+@media (max-width: 480px) {
+  .hv-archive { padding: 0 10px; }
+  .hv-form { padding: 12px; }
+  .hv-summary button, .hv-actions button { flex: 1 1 auto; }
+}
+</style>
+
+<script>
+(() => {
+  "use strict";
+
+  const STORAGE_KEY = "hexvault_archive_v1";
+  const CATEGORIES = [
+    "General", "Coding", "Cybersecurity",
+    "Research", "Personal Notes"
+  ];
+  const $ = id => document.getElementById(id);
+
+  const form = $("hv-form");
+  const titleInput = $("hv-title");
+  const categoryInput = $("hv-category");
+  const contentInput = $("hv-content");
+  const editIdInput = $("hv-edit-id");
+  const saveButton = $("hv-save");
+  const cancelButton = $("hv-cancel");
+  const searchInput = $("hv-search");
+  const filterInput = $("hv-filter");
+  const list = $("hv-list");
+  const count = $("hv-count");
+  const message = $("hv-message");
+  const exportButton = $("hv-export");
+  const importButton = $("hv-import-button");
+  const importFile = $("hv-import-file");
+
+  if (!form || form.dataset.hvReady) return;
+  form.dataset.hvReady = "true";
+
+  let entries = [];
+  let storageAvailable = true;
+
+  function showMessage(text) {
+    message.textContent = text;
+  }
+
+  function makeId() {
+    return Date.now().toString(36) +
+      Math.random().toString(36).slice(2);
+  }
+
+  function normalize(item) {
+    if (!item || typeof item !== "object" ||
+        typeof item.title !== "string" ||
+        typeof item.content !== "string") return null;
+
+    return {
+      id: typeof item.id === "string" ? item.id : makeId(),
+      title: item.title.slice(0, 120),
+      category: CATEGORIES.includes(item.category)
+        ? item.category : "General",
+      content: item.content.slice(0, 20000),
+      createdAt: Number.isFinite(item.createdAt)
+        ? item.createdAt : Date.now(),
+      updatedAt: Number.isFinite(item.updatedAt)
+        ? item.updatedAt : Date.now()
+    };
+  }
+
+  function persist() {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
+      storageAvailable = true;
+      return true;
+    } catch (error) {
+      storageAvailable = false;
+      showMessage("Save failed. Check browser storage.");
+      return false;
+    }
+  }
+
+  function load() {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (!saved) return [];
+      const parsed = JSON.parse(saved);
+      if (!Array.isArray(parsed)) throw Error("Invalid archive");
+      return parsed.map(normalize).filter(Boolean);
+    } catch (error) {
+      storageAvailable = false;
+      showMessage("Archive data could not be loaded. Back up or recover it first.");
+      return [];
+    }
+  }
+
+  function element(tag, className, text) {
+    const node = document.createElement(tag);
+    if (className) node.className = className;
+    if (text !== undefined) node.textContent = text;
+    return node;
+  }
+
+  function resetForm() {
+    form.reset();
+    editIdInput.value = "";
+    saveButton.textContent = "+ Save Entry";
+    cancelButton.hidden = true;
+  }
+
+  function render() {
+    const query = searchInput.value.trim().toLowerCase();
+    const selected = filterInput.value;
+
+    const visible = entries.filter(item => {
+      const categoryMatch =
+        selected === "All" || item.category === selected;
+      const searchMatch =
+        item.title.toLowerCase().includes(query) ||
+        item.content.toLowerCase().includes(query) ||
+        item.category.toLowerCase().includes(query);
+      return categoryMatch && searchMatch;
+    });
+
+    list.replaceChildren();
+    count.textContent =
+      `${visible.length} ${visible.length === 1 ? "entry" : "entries"}`;
+
+    if (!visible.length) {
+      list.appendChild(element("p", "hv-empty",
+        entries.length
+          ? "No entries match your search."
+          : "Your archive is empty. Create your first entry above."));
+      return;
+    }
+
+    visible.forEach(item => {
+      const card = element("article", "hv-entry");
+      card.append(
+        element("span", "hv-tag", item.category),
+        element("h3", "", item.title),
+        element("div", "hv-entry-meta",
+          "Updated: " + new Date(item.updatedAt).toLocaleString()),
+        element("p", "hv-entry-content", item.content)
+      );
+
+      const actions = element("div", "hv-entry-actions");
+      const edit = element("button", "", "Edit");
+      edit.type = "button";
+      edit.addEventListener("click", () => {
+        editIdInput.value = item.id;
+        titleInput.value = item.title;
+        categoryInput.value = item.category;
+        contentInput.value = item.content;
+        saveButton.textContent = "Save Changes";
+        cancelButton.hidden = false;
+        form.scrollIntoView({ behavior: "smooth", block: "start" });
+        titleInput.focus();
+      });
+
+      const remove = element("button", "", "Delete");
+      remove.type = "button";
+      remove.addEventListener("click", () => {
+        if (!confirm(`Delete "${item.title}"?`)) return;
+
+        const previous = entries;
+        entries = entries.filter(entry => entry.id !== item.id);
+        if (!persist()) {
+          entries = previous;
+          return;
+        }
+        if (editIdInput.value === item.id) resetForm();
+        showMessage("Entry deleted.");
+        render();
+      });
+
+      actions.append(edit, remove);
+      card.appendChild(actions);
+      list.appendChild(card);
+    });
+  }
+
+  form.addEventListener("submit", event => {
+    event.preventDefault();
+
+    if (!storageAvailable) {
+      showMessage("Saving is disabled until storage is recovered.");
+      return;
+    }
+
+    const title = titleInput.value.trim();
+    const content = contentInput.value.trim();
+    const category = CATEGORIES.includes(categoryInput.value)
+      ? categoryInput.value : "General";
+
+    if (!title || !content) {
+      showMessage("Enter a title and content.");
+      return;
+    }
+
+    const now = Date.now();
+    const id = editIdInput.value;
+    const previous = entries.map(item => ({ ...item }));
+
+    if (id) {
+      const index = entries.findIndex(item => item.id === id);
+      if (index < 0) {
+        showMessage("Entry not found. Refresh and try again.");
+        return;
+      }
+      entries[index] = {
+        ...entries[index], title, category, content, updatedAt: now
+      };
+    } else {
+      entries.unshift({
+        id: makeId(), title, category, content,
+        createdAt: now, updatedAt: now
+      });
+    }
+
+    if (!persist()) {
+      entries = previous;
+      return;
+    }
+
+    resetForm();
+    render();
+    showMessage(id ? "Entry updated." : "Entry saved.");
+  });
+
+  cancelButton.addEventListener("click", () => {
+    resetForm();
+    showMessage("Edit cancelled.");
+  });
+
+  searchInput.addEventListener("input", render);
+  filterInput.addEventListener("change", render);
+
+  exportButton.addEventListener("click", () => {
+    const blob = new Blob(
+      [JSON.stringify(entries, null, 2)],
+      { type: "application/json" }
+    );
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "hexvault-archive-backup.json";
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(url);
+    showMessage("Backup exported.");
+  });
+
+  importButton.addEventListener("click", () => importFile.click());
+
+  importFile.addEventListener("change", async () => {
+    const file = importFile.files && importFile.files[0];
+    if (!file) return;
+
+    try {
+      const parsed = JSON.parse(await file.text());
+      if (!Array.isArray(parsed)) throw Error("Backup must be a JSON array.");
+
+      const imported = parsed.map(normalize);
+      if (imported.some(item => !item)) {
+        throw Error("Backup contains invalid entries.");
+      }
+
+      if (!confirm("Importing replaces your current archive. Continue?")) {
+        return;
+      }
+
+      const previous = entries;
+      entries = imported;
+
+      if (!persist()) {
+        entries = previous;
+        return;
+      }
+
+      resetForm();
+      render();
+      showMessage("Backup imported.");
+    } catch (error) {
+      showMessage("Import failed: " + error.message);
+    } finally {
+      importFile.value = "";
+    }
+  });
+
+  entries = load();
+  render();
+})();
+</script>
