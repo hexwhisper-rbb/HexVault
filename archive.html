@@ -1,469 +1,618 @@
 
-<!-- =========================
-     HEXVAULT ARCHIVE
-     HTML + CSS + JAVASCRIPT
-     ========================= -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#050a07">
+  <title>HexVault | Archive</title>
 
-<section class="hv-archive" id="hexvault-archive">
-  <div class="hv-header">
-    <div>
-      <p class="hv-eyebrow">HEXVAULT // PRIVATE ARCHIVE</p>
-      <h2>Knowledge Vault</h2>
-      <p class="hv-muted">Store your notes. Keep your archive organized.</p>
-    </div>
-    <span class="hv-status">● LOCAL STORAGE</span>
-  </div>
-
-  <form id="hv-form" class="hv-form">
-    <input type="hidden" id="hv-edit-id">
-
-    <label for="hv-title">Entry title</label>
-    <input id="hv-title" maxlength="120"
-           placeholder="Enter archive title..." required>
-
-    <label for="hv-category">Category</label>
-    <select id="hv-category">
-      <option>General</option>
-      <option>Coding</option>
-      <option>Cybersecurity</option>
-      <option>Research</option>
-      <option>Personal Notes</option>
-    </select>
-
-    <label for="hv-content">Archive content</label>
-    <textarea id="hv-content" rows="5" maxlength="20000"
-      placeholder="Write your notes here..." required></textarea>
-
-    <div class="hv-actions">
-      <button type="submit" id="hv-save">+ Save Entry</button>
-      <button type="button" id="hv-cancel" hidden>Cancel Edit</button>
-    </div>
-  </form>
-
-  <div class="hv-toolbar">
-    <input id="hv-search" type="search"
-      placeholder="Search your archive...">
-    <select id="hv-filter">
-      <option value="All">All categories</option>
-      <option>General</option>
-      <option>Coding</option>
-      <option>Cybersecurity</option>
-      <option>Research</option>
-      <option>Personal Notes</option>
-    </select>
-  </div>
-
-  <div class="hv-summary">
-    <span id="hv-count">0 entries</span>
-    <button type="button" id="hv-export">Export Backup</button>
-    <button type="button" id="hv-import-button">Import Backup</button>
-    <input type="file" id="hv-import-file"
-      accept=".json,application/json" hidden>
-  </div>
-
-  <p id="hv-message" class="hv-message" role="status"></p>
-  <div id="hv-list" class="hv-list"></div>
-</section>
-
-<style>
-.hv-archive {
-  width: 100%;
-  max-width: 1000px;
-  margin: 30px auto;
-  color: inherit;
-  font-family: inherit;
-  box-sizing: border-box;
-}
-.hv-archive *,
-.hv-archive *::before,
-.hv-archive *::after {
-  box-sizing: border-box;
-}
-.hv-header, .hv-summary, .hv-toolbar, .hv-actions {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  flex-wrap: wrap;
-}
-.hv-header { margin-bottom: 22px; }
-.hv-eyebrow {
-  color: #39ff88;
-  font-size: .75rem;
-  letter-spacing: 2px;
-}
-.hv-archive h2 {
-  margin: 8px 0;
-  font-size: clamp(1.5rem, 5vw, 2.2rem);
-}
-.hv-muted, .hv-entry-meta {
-  opacity: .7;
-  font-size: .85rem;
-}
-.hv-status, .hv-tag {
-  color: #39ff88;
-  font-size: .75rem;
-}
-.hv-form {
-  display: grid;
-  gap: 10px;
-  padding: 18px;
-  margin-bottom: 20px;
-  border: 1px solid rgba(57,255,136,.3);
-  border-radius: 12px;
-  background: rgba(0,0,0,.16);
-}
-.hv-archive input,
-.hv-archive select,
-.hv-archive textarea {
-  width: 100%;
-  min-width: 0;
-  padding: 12px;
-  color: inherit;
-  background: rgba(0,0,0,.3);
-  border: 1px solid rgba(57,255,136,.3);
-  border-radius: 7px;
-  font: inherit;
-}
-.hv-archive textarea { resize: vertical; }
-.hv-archive input:focus,
-.hv-archive select:focus,
-.hv-archive textarea:focus {
-  outline: 2px solid #39ff88;
-  outline-offset: 2px;
-}
-.hv-archive button {
-  padding: 10px 14px;
-  color: #39ff88;
-  background: rgba(0,0,0,.25);
-  border: 1px solid #39ff88;
-  border-radius: 7px;
-  font: inherit;
-  cursor: pointer;
-}
-.hv-archive button:hover {
-  background: rgba(57,255,136,.12);
-}
-.hv-toolbar { margin: 18px 0; }
-.hv-toolbar input { flex: 2 1 200px; }
-.hv-toolbar select { flex: 1 1 150px; }
-.hv-summary {
-  justify-content: flex-start;
-  margin: 14px 0;
-}
-.hv-message {
-  min-height: 1.4em;
-  overflow-wrap: anywhere;
-}
-.hv-entry {
-  padding: 16px;
-  margin: 14px 0;
-  border: 1px solid rgba(57,255,136,.25);
-  border-radius: 10px;
-  background: rgba(0,0,0,.18);
-  overflow-wrap: anywhere;
-}
-.hv-entry h3 { margin: 8px 0; }
-.hv-entry-content {
-  white-space: pre-wrap;
-  overflow-wrap: anywhere;
-  line-height: 1.6;
-}
-.hv-entry-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-.hv-empty { opacity: .7; padding: 20px 0; }
-@media (max-width: 480px) {
-  .hv-archive { padding: 0 10px; }
-  .hv-form { padding: 12px; }
-  .hv-summary button, .hv-actions button { flex: 1 1 auto; }
-}
-</style>
-
-<script>
-(() => {
-  "use strict";
-
-  const STORAGE_KEY = "hexvault_archive_v1";
-  const CATEGORIES = [
-    "General", "Coding", "Cybersecurity",
-    "Research", "Personal Notes"
-  ];
-  const $ = id => document.getElementById(id);
-
-  const form = $("hv-form");
-  const titleInput = $("hv-title");
-  const categoryInput = $("hv-category");
-  const contentInput = $("hv-content");
-  const editIdInput = $("hv-edit-id");
-  const saveButton = $("hv-save");
-  const cancelButton = $("hv-cancel");
-  const searchInput = $("hv-search");
-  const filterInput = $("hv-filter");
-  const list = $("hv-list");
-  const count = $("hv-count");
-  const message = $("hv-message");
-  const exportButton = $("hv-export");
-  const importButton = $("hv-import-button");
-  const importFile = $("hv-import-file");
-
-  if (!form || form.dataset.hvReady) return;
-  form.dataset.hvReady = "true";
-
-  let entries = [];
-  let storageAvailable = true;
-
-  function showMessage(text) {
-    message.textContent = text;
-  }
-
-  function makeId() {
-    return Date.now().toString(36) +
-      Math.random().toString(36).slice(2);
-  }
-
-  function normalize(item) {
-    if (!item || typeof item !== "object" ||
-        typeof item.title !== "string" ||
-        typeof item.content !== "string") return null;
-
-    return {
-      id: typeof item.id === "string" ? item.id : makeId(),
-      title: item.title.slice(0, 120),
-      category: CATEGORIES.includes(item.category)
-        ? item.category : "General",
-      content: item.content.slice(0, 20000),
-      createdAt: Number.isFinite(item.createdAt)
-        ? item.createdAt : Date.now(),
-      updatedAt: Number.isFinite(item.updatedAt)
-        ? item.updatedAt : Date.now()
-    };
-  }
-
-  function persist() {
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
-      storageAvailable = true;
-      return true;
-    } catch (error) {
-      storageAvailable = false;
-      showMessage("Save failed. Check browser storage.");
-      return false;
-    }
-  }
-
-  function load() {
-    try {
-      const saved = localStorage.getItem(STORAGE_KEY);
-      if (!saved) return [];
-      const parsed = JSON.parse(saved);
-      if (!Array.isArray(parsed)) throw Error("Invalid archive");
-      return parsed.map(normalize).filter(Boolean);
-    } catch (error) {
-      storageAvailable = false;
-      showMessage("Archive data could not be loaded. Back up or recover it first.");
-      return [];
-    }
-  }
-
-  function element(tag, className, text) {
-    const node = document.createElement(tag);
-    if (className) node.className = className;
-    if (text !== undefined) node.textContent = text;
-    return node;
-  }
-
-  function resetForm() {
-    form.reset();
-    editIdInput.value = "";
-    saveButton.textContent = "+ Save Entry";
-    cancelButton.hidden = true;
-  }
-
-  function render() {
-    const query = searchInput.value.trim().toLowerCase();
-    const selected = filterInput.value;
-
-    const visible = entries.filter(item => {
-      const categoryMatch =
-        selected === "All" || item.category === selected;
-      const searchMatch =
-        item.title.toLowerCase().includes(query) ||
-        item.content.toLowerCase().includes(query) ||
-        item.category.toLowerCase().includes(query);
-      return categoryMatch && searchMatch;
-    });
-
-    list.replaceChildren();
-    count.textContent =
-      `${visible.length} ${visible.length === 1 ? "entry" : "entries"}`;
-
-    if (!visible.length) {
-      list.appendChild(element("p", "hv-empty",
-        entries.length
-          ? "No entries match your search."
-          : "Your archive is empty. Create your first entry above."));
-      return;
+  <style>
+    :root {
+      --bg: #050a07;
+      --panel: #0b1510;
+      --green: #39ff88;
+      --muted: #8aa997;
+      --border: rgba(57, 255, 136, 0.25);
     }
 
-    visible.forEach(item => {
-      const card = element("article", "hv-entry");
-      card.append(
-        element("span", "hv-tag", item.category),
-        element("h3", "", item.title),
-        element("div", "hv-entry-meta",
-          "Updated: " + new Date(item.updatedAt).toLocaleString()),
-        element("p", "hv-entry-content", item.content)
-      );
+    * {
+      box-sizing: border-box;
+    }
 
-      const actions = element("div", "hv-entry-actions");
-      const edit = element("button", "", "Edit");
-      edit.type = "button";
-      edit.addEventListener("click", () => {
-        editIdInput.value = item.id;
-        titleInput.value = item.title;
-        categoryInput.value = item.category;
-        contentInput.value = item.content;
-        saveButton.textContent = "Save Changes";
-        cancelButton.hidden = false;
-        form.scrollIntoView({ behavior: "smooth", block: "start" });
-        titleInput.focus();
-      });
+    body {
+      margin: 0;
+      min-height: 100vh;
+      padding: 20px;
+      background: var(--bg);
+      color: #e0f5e8;
+      font-family: "Courier New", monospace;
+    }
 
-      const remove = element("button", "", "Delete");
-      remove.type = "button";
-      remove.addEventListener("click", () => {
-        if (!confirm(`Delete "${item.title}"?`)) return;
+    .container {
+      max-width: 900px;
+      margin: auto;
+    }
 
-        const previous = entries;
-        entries = entries.filter(entry => entry.id !== item.id);
+    header {
+      padding: 22px 0;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 25px;
+    }
+
+    .brand {
+      color: var(--green);
+      letter-spacing: 3px;
+      font-size: 13px;
+    }
+
+    h1 {
+      margin: 12px 0 5px;
+      font-size: clamp(25px, 6vw, 38px);
+      overflow-wrap: anywhere;
+    }
+
+    .muted {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 18px;
+      margin-bottom: 22px;
+    }
+
+    h2 {
+      color: var(--green);
+      font-size: 17px;
+      margin-top: 0;
+    }
+
+    label {
+      display: block;
+      margin: 14px 0 7px;
+      font-size: 13px;
+    }
+
+    input, textarea, select {
+      display: block;
+      width: 100%;
+      min-width: 0;
+      padding: 12px;
+      background: #050b07;
+      color: #e0f5e8;
+      border: 1px solid var(--border);
+      border-radius: 7px;
+      font: inherit;
+      font-size: 14px;
+    }
+
+    textarea {
+      min-height: 130px;
+      resize: vertical;
+      line-height: 1.6;
+    }
+
+    input:focus, textarea:focus, select:focus {
+      outline: 2px solid var(--green);
+      outline-offset: 2px;
+    }
+
+    button {
+      padding: 11px 14px;
+      background: transparent;
+      color: var(--green);
+      border: 1px solid var(--green);
+      border-radius: 7px;
+      font: inherit;
+      font-size: 13px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: rgba(57, 255, 136, 0.1);
+    }
+
+    .button-row, .toolbar, .backup-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 14px;
+    }
+
+    .toolbar input {
+      flex: 2 1 200px;
+    }
+
+    .toolbar select {
+      flex: 1 1 150px;
+    }
+
+    .backup-row {
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .entry {
+      padding: 16px;
+      margin: 14px 0;
+      background: #08110b;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow-wrap: anywhere;
+    }
+
+    .entry h3 {
+      margin: 9px 0;
+      font-size: 17px;
+    }
+
+    .tag {
+      color: var(--green);
+      font-size: 11px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    .entry-content {
+      white-space: pre-wrap;
+      line-height: 1.7;
+      font-size: 14px;
+    }
+
+    .meta {
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.6;
+    }
+
+    .entry-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 14px;
+    }
+
+    .status {
+      min-height: 20px;
+      color: var(--green);
+      font-size: 12px;
+      line-height: 1.6;
+    }
+
+    .empty {
+      color: var(--muted);
+      padding: 20px 0;
+      text-align: center;
+      line-height: 1.6;
+    }
+
+    [hidden] {
+      display: none !important;
+    }
+
+    footer {
+      padding: 20px 0;
+      color: var(--muted);
+      text-align: center;
+      font-size: 11px;
+    }
+
+    @media (max-width: 480px) {
+      body {
+        padding: 12px;
+      }
+
+      .panel {
+        padding: 13px;
+      }
+
+      .button-row button,
+      .backup-row button {
+        flex: 1 1 auto;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <main class="container">
+    <header>
+      <div class="brand">⬡ HEXVAULT / ARCHIVE SYSTEM</div>
+      <h1>Knowledge Vault<span style="color:var(--green)">_</span></h1>
+      <p class="muted">
+        Store your coding notes, research, and ideas in one place.
+      </p>
+    </header>
+
+    <section class="panel">
+      <h2 id="form-heading">+ CREATE ARCHIVE ENTRY</h2>
+
+      <form id="archive-form">
+        <input type="hidden" id="edit-id">
+
+        <label for="entry-title">Entry title</label>
+        <input id="entry-title" maxlength="120"
+          placeholder="Enter title..." required>
+
+        <label for="entry-category">Category</label>
+        <select id="entry-category">
+          <option>General</option>
+          <option>Coding</option>
+          <option>Cybersecurity</option>
+          <option>OSINT</option>
+          <option>Research</option>
+          <option>Personal Notes</option>
+        </select>
+
+        <label for="entry-content">Content</label>
+        <textarea id="entry-content" maxlength="20000"
+          placeholder="Write your notes here..." required></textarea>
+
+        <div class="button-row">
+          <button type="submit" id="save-button">SAVE ENTRY</button>
+          <button type="button" id="cancel-button" hidden>
+            CANCEL EDIT
+          </button>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel">
+      <h2>// SEARCH DATABASE</h2>
+
+      <div class="toolbar">
+        <input id="search" type="search"
+          placeholder="Search entries...">
+        <select id="category-filter" aria-label="Filter category">
+          <option value="All">All categories</option>
+          <option>General</option>
+          <option>Coding</option>
+          <option>Cybersecurity</option>
+          <option>OSINT</option>
+          <option>Research</option>
+          <option>Personal Notes</option>
+        </select>
+      </div>
+
+      <div class="backup-row">
+        <span class="muted" id="entry-count">0 entries</span>
+        <button type="button" id="export-button">EXPORT BACKUP</button>
+        <button type="button" id="import-button">IMPORT BACKUP</button>
+        <input type="file" id="import-file"
+          accept=".json,application/json" hidden>
+      </div>
+
+      <p id="status" class="status" role="status" aria-live="polite"></p>
+      <div id="entries"></div>
+    </section>
+
+    <footer>
+      HEXVAULT ARCHIVE // LOCAL BROWSER STORAGE
+    </footer>
+  </main>
+
+  <script>
+    (() => {
+      "use strict";
+
+      const STORAGE_KEY = "hexvault_standalone_archive_v1";
+      const $ = id => document.getElementById(id);
+
+      const form = $("archive-form");
+      const titleInput = $("entry-title");
+      const categoryInput = $("entry-category");
+      const contentInput = $("entry-content");
+      const editInput = $("edit-id");
+      const saveButton = $("save-button");
+      const cancelButton = $("cancel-button");
+      const formHeading = $("form-heading");
+      const searchInput = $("search");
+      const filterInput = $("category-filter");
+      const entriesContainer = $("entries");
+      const countLabel = $("entry-count");
+      const status = $("status");
+      const importFile = $("import-file");
+
+      const categories = [
+        "General", "Coding", "Cybersecurity",
+        "OSINT", "Research", "Personal Notes"
+      ];
+
+      let entries = [];
+      let storageReady = true;
+
+      function notify(text) {
+        status.textContent = text;
+      }
+
+      function makeId() {
+        return Date.now().toString(36) +
+          Math.random().toString(36).slice(2);
+      }
+
+      function normalize(item) {
+        if (!item || typeof item !== "object" ||
+            typeof item.title !== "string" ||
+            typeof item.content !== "string") {
+          return null;
+        }
+
+        return {
+          id: typeof item.id === "string" ? item.id : makeId(),
+          title: item.title.slice(0, 120),
+          category: categories.includes(item.category)
+            ? item.category : "General",
+          content: item.content.slice(0, 20000),
+          createdAt: Number.isFinite(item.createdAt)
+            ? item.createdAt : Date.now(),
+          updatedAt: Number.isFinite(item.updatedAt)
+            ? item.updatedAt : Date.now()
+        };
+      }
+
+      function loadEntries() {
+        try {
+          const saved = localStorage.getItem(STORAGE_KEY);
+          if (!saved) return [];
+
+          const parsed = JSON.parse(saved);
+          if (!Array.isArray(parsed)) {
+            throw new Error("Invalid archive data");
+          }
+
+          return parsed.map(normalize).filter(Boolean);
+        } catch (error) {
+          storageReady = false;
+          notify("Could not read archive storage. Recover your backup first.");
+          return [];
+        }
+      }
+
+      function persist() {
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
+          storageReady = true;
+          return true;
+        } catch (error) {
+          storageReady = false;
+          notify("Saving failed. Check your browser storage.");
+          return false;
+        }
+      }
+
+      function el(tag, className, text) {
+        const node = document.createElement(tag);
+        if (className) node.className = className;
+        if (text !== undefined) node.textContent = text;
+        return node;
+      }
+
+      function resetForm() {
+        form.reset();
+        editInput.value = "";
+        saveButton.textContent = "SAVE ENTRY";
+        formHeading.textContent = "+ CREATE ARCHIVE ENTRY";
+        cancelButton.hidden = true;
+      }
+
+      function render() {
+        const query = searchInput.value.trim().toLowerCase();
+        const selectedCategory = filterInput.value;
+
+        const visible = entries.filter(item => {
+          const categoryMatch =
+            selectedCategory === "All" ||
+            item.category === selectedCategory;
+
+          const searchMatch =
+            item.title.toLowerCase().includes(query) ||
+            item.content.toLowerCase().includes(query) ||
+            item.category.toLowerCase().includes(query);
+
+          return categoryMatch && searchMatch;
+        });
+
+        entriesContainer.replaceChildren();
+
+        countLabel.textContent =
+          visible.length + (visible.length === 1 ? " entry" : " entries");
+
+        if (!visible.length) {
+          entriesContainer.appendChild(el(
+            "p",
+            "empty",
+            entries.length
+              ? "No entries match your search."
+              : "Archive empty. Create your first entry above."
+          ));
+          return;
+        }
+
+        visible.forEach(item => {
+          const card = el("article", "entry");
+          const tag = el("span", "tag", item.category);
+          const heading = el("h3", "", item.title);
+          const date = el(
+            "div",
+            "meta",
+            "Saved: " + new Date(item.createdAt).toLocaleString() +
+            " | Updated: " + new Date(item.updatedAt).toLocaleString()
+          );
+          const body = el("p", "entry-content", item.content);
+          const actions = el("div", "entry-actions");
+
+          const editButton = el("button", "", "EDIT");
+          editButton.type = "button";
+          editButton.addEventListener("click", () => {
+            editInput.value = item.id;
+            titleInput.value = item.title;
+            categoryInput.value = item.category;
+            contentInput.value = item.content;
+
+            saveButton.textContent = "SAVE CHANGES";
+            formHeading.textContent = "// EDIT ARCHIVE ENTRY";
+            cancelButton.hidden = false;
+
+            form.scrollIntoView({ behavior: "smooth" });
+            titleInput.focus();
+          });
+
+          const deleteButton = el("button", "", "DELETE");
+          deleteButton.type = "button";
+          deleteButton.addEventListener("click", () => {
+            if (!confirm("Delete this archive entry?")) return;
+
+            const previous = entries;
+            entries = entries.filter(entry => entry.id !== item.id);
+
+            if (!persist()) {
+              entries = previous;
+              return;
+            }
+
+            if (editInput.value === item.id) resetForm();
+
+            notify("Entry deleted.");
+            render();
+          });
+
+          actions.append(editButton, deleteButton);
+          card.append(tag, heading, date, body, actions);
+          entriesContainer.appendChild(card);
+        });
+      }
+
+      form.addEventListener("submit", event => {
+        event.preventDefault();
+
+        if (!storageReady) {
+          notify("Storage is unavailable. Recover your archive first.");
+          return;
+        }
+
+        const title = titleInput.value.trim();
+        const content = contentInput.value.trim();
+        const category = categories.includes(categoryInput.value)
+          ? categoryInput.value : "General";
+
+        if (!title || !content) {
+          notify("Please enter a title and content.");
+          return;
+        }
+
+        const previous = entries.map(item => ({ ...item }));
+        const editId = editInput.value;
+        const now = Date.now();
+
+        if (editId) {
+          const index = entries.findIndex(item => item.id === editId);
+
+          if (index === -1) {
+            notify("Entry not found. Refresh and try again.");
+            return;
+          }
+
+          entries[index] = {
+            ...entries[index],
+            title, category, content,
+            updatedAt: now
+          };
+        } else {
+          entries.unshift({
+            id: makeId(),
+            title, category, content,
+            createdAt: now,
+            updatedAt: now
+          });
+        }
+
         if (!persist()) {
           entries = previous;
           return;
         }
-        if (editIdInput.value === item.id) resetForm();
-        showMessage("Entry deleted.");
+
+        resetForm();
         render();
+        notify(editId ? "Entry updated." : "Entry saved.");
       });
 
-      actions.append(edit, remove);
-      card.appendChild(actions);
-      list.appendChild(card);
-    });
-  }
-
-  form.addEventListener("submit", event => {
-    event.preventDefault();
-
-    if (!storageAvailable) {
-      showMessage("Saving is disabled until storage is recovered.");
-      return;
-    }
-
-    const title = titleInput.value.trim();
-    const content = contentInput.value.trim();
-    const category = CATEGORIES.includes(categoryInput.value)
-      ? categoryInput.value : "General";
-
-    if (!title || !content) {
-      showMessage("Enter a title and content.");
-      return;
-    }
-
-    const now = Date.now();
-    const id = editIdInput.value;
-    const previous = entries.map(item => ({ ...item }));
-
-    if (id) {
-      const index = entries.findIndex(item => item.id === id);
-      if (index < 0) {
-        showMessage("Entry not found. Refresh and try again.");
-        return;
-      }
-      entries[index] = {
-        ...entries[index], title, category, content, updatedAt: now
-      };
-    } else {
-      entries.unshift({
-        id: makeId(), title, category, content,
-        createdAt: now, updatedAt: now
+      cancelButton.addEventListener("click", () => {
+        resetForm();
+        notify("Edit cancelled.");
       });
-    }
 
-    if (!persist()) {
-      entries = previous;
-      return;
-    }
+      searchInput.addEventListener("input", render);
+      filterInput.addEventListener("change", render);
 
-    resetForm();
-    render();
-    showMessage(id ? "Entry updated." : "Entry saved.");
-  });
+      $("export-button").addEventListener("click", () => {
+        const blob = new Blob(
+          [JSON.stringify(entries, null, 2)],
+          { type: "application/json" }
+        );
 
-  cancelButton.addEventListener("click", () => {
-    resetForm();
-    showMessage("Edit cancelled.");
-  });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = "hexvault-archive-backup.json";
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        URL.revokeObjectURL(url);
 
-  searchInput.addEventListener("input", render);
-  filterInput.addEventListener("change", render);
+        notify("Backup exported.");
+      });
 
-  exportButton.addEventListener("click", () => {
-    const blob = new Blob(
-      [JSON.stringify(entries, null, 2)],
-      { type: "application/json" }
-    );
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = "hexvault-archive-backup.json";
-    document.body.appendChild(link);
-    link.click();
-    link.remove();
-    URL.revokeObjectURL(url);
-    showMessage("Backup exported.");
-  });
+      $("import-button").addEventListener("click", () => {
+        importFile.click();
+      });
 
-  importButton.addEventListener("click", () => importFile.click());
+      importFile.addEventListener("change", async () => {
+        const file = importFile.files && importFile.files[0];
+        if (!file) return;
 
-  importFile.addEventListener("change", async () => {
-    const file = importFile.files && importFile.files[0];
-    if (!file) return;
+        try {
+          const parsed = JSON.parse(await file.text());
 
-    try {
-      const parsed = JSON.parse(await file.text());
-      if (!Array.isArray(parsed)) throw Error("Backup must be a JSON array.");
+          if (!Array.isArray(parsed)) {
+            throw new Error("Backup must contain a JSON array.");
+          }
 
-      const imported = parsed.map(normalize);
-      if (imported.some(item => !item)) {
-        throw Error("Backup contains invalid entries.");
-      }
+          const imported = parsed.map(normalize);
 
-      if (!confirm("Importing replaces your current archive. Continue?")) {
-        return;
-      }
+          if (imported.some(item => !item)) {
+            throw new Error("Backup contains invalid entries.");
+          }
 
-      const previous = entries;
-      entries = imported;
+          if (!confirm(
+            "Importing replaces the current archive. Export a backup first if needed. Continue?"
+          )) return;
 
-      if (!persist()) {
-        entries = previous;
-        return;
-      }
+          const previous = entries;
+          entries = imported;
 
-      resetForm();
+          if (!persist()) {
+            entries = previous;
+            return;
+          }
+
+          resetForm();
+          render();
+          notify("Backup imported successfully.");
+        } catch (error) {
+          notify("Import failed: " + error.message);
+        } finally {
+          importFile.value = "";
+        }
+      });
+
+      entries = loadEntries();
       render();
-      showMessage("Backup imported.");
-    } catch (error) {
-      showMessage("Import failed: " + error.message);
-    } finally {
-      importFile.value = "";
-    }
-  });
-
-  entries = load();
-  render();
-})();
-</script>
+    })();
+  </script>
+</body>
+</html>
