@@ -788,5 +788,232 @@
       render();
     })();
   </script>
+  
+/* HEXVAULT LOCK SCREEN
+   Educational demo only — not real data security. */
+(() => {
+  "use strict";
+
+  const CONFIG_KEY = "hexvault_demo_lock_v1";
+
+  const screen = document.getElementById("hv-lock-screen");
+  const form = document.getElementById("hv-lock-form");
+  const password = document.getElementById("hv-lock-password");
+  const confirmPassword = document.getElementById("hv-lock-confirm");
+  const heading = document.getElementById("hv-lock-heading");
+  const description = document.getElementById("hv-lock-description");
+  const label = document.getElementById("hv-password-label");
+  const submit = document.getElementById("hv-lock-submit");
+  const message = document.getElementById("hv-lock-message");
+  const relock = document.getElementById("hv-relock-button");
+
+  if (!screen || !form || !password || !confirmPassword ||
+      !heading || !description || !label || !submit ||
+      !message || !relock) {
+    console.error("HexVault lock screen: missing HTML elements.");
+    return;
+  }
+
+  let config = null;
+  let setupMode = false;
+  let unlocked = false;
+  let attempts = 0;
+  let blockedUntil = 0;
+
+  function say(text) {
+    message.textContent = text;
+  }
+
+  function readConfig() {
+    try {
+      const raw = localStorage.getItem(CONFIG_KEY);
+      if (!raw) return null;
+
+      const data = JSON.parse(raw);
+
+      if (
+        typeof data.salt !== "string" ||
+        typeof data.hash !== "string"
+      ) {
+        throw new Error("Invalid lock configuration.");
+      }
+
+      return data;
+    } catch (error) {
+      say("Lock settings could not be read. Do not clear stored data.");
+      return false;
+    }
+  }
+
+  function hex(bytes) {
+    return Array.from(bytes, b =>
+      b.toString(16).padStart(2, "0")
+    ).join("");
+  }
+
+  function fromHex(value) {
+    if (!/^[0-9a-f]+$/i.test(value) || value.length % 2) {
+      throw new Error("Invalid stored value.");
+    }
+
+    const result = new Uint8Array(value.length / 2);
+
+    for (let i = 0; i < result.length; i++) {
+      result[i] = parseInt(value.slice(i * 2, i * 2 + 2), 16);
+    }
+
+    return result;
+  }
+
+  async function hashPassword(value, saltHex) {
+    if (!window.crypto || !window.crypto.subtle) {
+      throw new Error(
+        "Secure hashing is unavailable. Open this page over HTTPS."
+      );
+    }
+
+    const salt = fromHex(saltHex);
+    const bytes = new TextEncoder().encode(value);
+    const combined = new Uint8Array(salt.length + bytes.length);
+
+    combined.set(salt);
+    combined.set(bytes, salt.length);
+
+    const digest = await crypto.subtle.digest("SHA-256", combined);
+    return hex(new Uint8Array(digest));
+  }
+
+  function showSetup() {
+    setupMode = true;
+    heading.textContent = "Create Vault Password";
+    description.textContent =
+      "Choose a password for this learning demo.";
+    label.textContent = "New password";
+    password.autocomplete = "new-password";
+    password.placeholder = "At least 8 characters";
+    confirmPassword.hidden = false;
+    confirmPassword.required = true;
+    submit.textContent = "CREATE PASSWORD";
+  }
+
+  function showUnlock() {
+    setupMode = false;
+    heading.textContent = "Vault Locked";
+    description.textContent =
+      "Enter your password to open the archive.";
+    label.textContent = "Password";
+    password.autocomplete = "current-password";
+    password.placeholder = "Enter password...";
+    confirmPassword.hidden = true;
+    confirmPassword.required = false;
+    confirmPassword.value = "";
+    submit.textContent = "UNLOCK VAULT";
+  }
+
+  function lockVault() {
+    unlocked = false;
+    screen.hidden = false;
+    relock.hidden = true;
+    form.reset();
+    showUnlock();
+    say("");
+    password.focus();
+  }
+
+  function unlockVault() {
+    unlocked = true;
+    screen.hidden = true;
+    relock.hidden = false;
+    form.reset();
+    say("");
+  }
+
+  async function initialize() {
+    // Fail closed if storage cannot be checked.
+    const saved = readConfig();
+
+    if (saved === false) {
+      submit.disabled = true;
+      return;
+    }
+
+    config = saved;
+
+    if (!config) {
+      showSetup();
+    } else {
+      showUnlock();
+    }
+
+    screen.hidden = false;
+    relock.hidden = true;
+  }
+
+  form.addEventListener("submit", async event => {
+    event.preventDefault();
+
+    if (Date.now() < blockedUntil) {
+      say("Too many attempts. Wait a little and try again.");
+      return;
+    }
+
+    const value = password.value;
+
+    if (value.length < 8 || value.length > 128) {
+      say("Use a password between 8 and 128 characters.");
+      return;
+    }
+
+    submit.disabled = true;
+
+    try {
+      if (setupMode) {
+        if (value !== confirmPassword.value) {
+          say("Passwords do not match.");
+          return;
+        }
+
+        const saltBytes = crypto.getRandomValues(new Uint8Array(16));
+        const salt = hex(saltBytes);
+        const hash = await hashPassword(value, salt);
+
+        const newConfig = { salt, hash };
+
+        // Verify storage works before accepting setup.
+        localStorage.setItem(CONFIG_KEY, JSON.stringify(newConfig));
+
+        config = newConfig;
+        attempts = 0;
+        unlockVault();
+        return;
+      }
+
+      const candidate = await hashPassword(value, config.salt);
+
+      if (candidate === config.hash) {
+        attempts = 0;
+        unlockVault();
+      } else {
+        attempts++;
+
+        if (attempts >= 5) {
+          blockedUntil = Date.now() + 30000;
+          attempts = 0;
+          say("Too many attempts. Wait 30 seconds.");
+        } else {
+          say("Incorrect password. Try again.");
+        }
+      }
+    } catch (error) {
+      say(error.message || "Unable to verify password.");
+    } finally {
+      submit.disabled = false;
+    }
+  });
+
+  relock.addEventListener("click", lockVault);
+
+  initialize();
+})();
 </body>
 </html>
